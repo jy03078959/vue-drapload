@@ -27,13 +27,11 @@
       -webkit-transform: translateZ(0);
       transform: translateZ(0);
     }
-
     .dropload-refresh, .dropload-update, .dropload-load, .dropload-noData {
       height: 50px;
       line-height: 50px;
       text-align: center;
     }
-
     .dropload-load .loading {
       display: inline-block;
       height: 15px;
@@ -46,7 +44,6 @@
       -webkit-animation: rotate 0.75s linear infinite;
       animation: rotate 0.75s linear infinite;
     }
-
     @-webkit-keyframes rotate {
       from {-webkit-transform:rotate(0deg);}
       to {-webkit-transform:rotate(360deg);}
@@ -123,7 +120,7 @@
         //if scrollTop = scroll-foot , function run.
         me.$options.loadListData(function (data) {
             me.a = me.a.concat(data)
-            me.ascroll.resetload(true)
+            me.ascroll.resetload()
         });
 
       },

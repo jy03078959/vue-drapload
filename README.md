@@ -28,6 +28,40 @@ Vue.use(vueDrapload)
 ```JavaScript
 <script src="../node_modules/vue_scroll/vue-drapload.js"></script>
 ```
+### 引入默认加载效果的css
+```css
+.dropload-up {
+      position: relative;
+      height: 0;
+      overflow: hidden;
+      font-size: 12px;
+      -webkit-transform: translateZ(0);
+      transform: translateZ(0);
+    }
+    .dropload-refresh, .dropload-update, .dropload-load, .dropload-noData {
+      height: 50px;
+      line-height: 50px;
+      text-align: center;
+    }
+    .dropload-load .loading {
+      display: inline-block;
+      height: 15px;
+      width: 15px;
+      border-radius: 100%;
+      margin: 6px;
+      border: 2px solid #666;
+      border-bottom-color: transparent;
+      vertical-align: middle;
+      -webkit-animation: rotate 0.75s linear infinite;
+      animation: rotate 0.75s linear infinite;
+    }
+    @-webkit-keyframes rotate {
+      from {-webkit-transform:rotate(0deg);}
+      to {-webkit-transform:rotate(360deg);}
+    }
+```
+
+
 
 # 使用方法//Usage
 

@@ -226,11 +226,10 @@
         if (this.__initConfig) return
         this.__initConfig = true
         var element = directive.el
-        me.directive = directive,                                            // 滑动区域
-        me.element = element,                                            // 滑动区域
-
+        me.directive = directive                                            // 滑动区域
+        me.element = element                                            // 滑动区域
+        me.isData = true
         me._options = {
-            isData:true,
             key: "scroll_" + parseInt(Math.random() * 10),
             domUp: {                                                            // 上方DOM
               dom: null,
