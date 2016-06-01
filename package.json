@@ -1,8 +1,8 @@
 {
   "name": "vue-drapload",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "description": "one vue plug for resolve pull-to-refresh and load more data",
-  "main": "src/vue-scroll.js",
+  "main": "src/index.js",
   "directories": {
     "example": "example"
   },
