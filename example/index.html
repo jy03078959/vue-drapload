@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>vue 测试例子</title>
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1, minimum-scale=1, user-scalable=1"/>
+  <meta name="renderer" content="webkit"/>
+  <meta name="apple-mobile-web-app-capable" content="yes"/>
+  <meta name="full-screen" content="yes"/>
+  <meta name="x5-fullscreen" content="true"/>
+  <meta name="format-detection" content="telephone=no">
+  <style>
+    .app {
+      height: 250px;
+      overflow: auto;
+      border: 1px solid #ddd;
+      margin: 10px auto;
+      -webkit-overflow-scrolling: touch; /* ios5+ 以上滚动流畅*/
+    }
+
+    .dropload-up {
+      position: relative;
+      height: 0;
+      overflow: hidden;
+      font-size: 12px;
+      -webkit-transform: translateZ(0);
+      transform: translateZ(0);
+    }
+
+    .dropload-refresh, .dropload-update, .dropload-load, .dropload-noData {
+      height: 50px;
+      line-height: 50px;
+      text-align: center;
+    }
+
+    .dropload-load .loading {
+      display: inline-block;
+      height: 15px;
+      width: 15px;
+      border-radius: 100%;
+      margin: 6px;
+      border: 2px solid #666;
+      border-bottom-color: transparent;
+      vertical-align: middle;
+      -webkit-animation: rotate 0.75s linear infinite;
+      animation: rotate 0.75s linear infinite;
+    }
+
+    @-webkit-keyframes rotate {
+      from {-webkit-transform:rotate(0deg);}
+      to {-webkit-transform:rotate(360deg);}
+    }
+  </style>
+</head>
+<body>
+<div class="app" v-scroll scroll-key="ascroll" scroll-initialize="true" scroll-down="down_a()" scroll-up="up_a()">
+  <div style="border: 1px solid">
+    <div class="item" v-for="item in a">
+      <h1 class="name">{{item.value}}</h1>
+      <div class="desc">{{item.data.description}}</div>
+      <div class="down">{{item.data.url}}</div>
+      <div class="score">{{item.data.suggested_score}}</div>
+    </div>
+  </div>
+</div>
+
+<div class="app" v-scroll scroll-key="bscroll" scroll-initialize="true"  scroll-down="down_b()">
+  <div>
+    <div class="item" v-for="item in b">
+      <h1 class="name">{{item.value}}</h1>
+      <div class="desc">{{item.data.description}}</div>
+      <div class="down">{{item.data.url}}</div>
+      <div class="score">{{item.data.suggested_score}}</div>
+    </div>
+  </div>
+</div>
+
+<script src="jquery.js"></script>
+<script src="http://rap.taobao.org/rap.plugin.js?projectId=4039"></script>
+<script src="vue.js"></script>
+<script src="../src/vue-scroll.js"></script>
+<script>
+
+  Vue.use(window.Scroll)
+
+  var app = new Vue({
+    el: 'body',
+    data: function () {
+      return { a: [], b: [] }
+    },
+    data: function () {
+      return { a: [], b: [] }
+    },
+
+    ready: function () {
+      var me = this;
+      me.$options.vue = me
+    },
+    /**
+     * 加载数据
+     * @param fn
+     */
+    loadListData: function (fn) {
+      var me = this.vue;
+      $.ajax({
+        url: 'npm',
+        data: {},
+        type: 'GET',
+        success: function (data) {
+
+          // 初始化数据 先获取所有数据并初始化前６条
+          // Initialize the data,get 0-6 data of the array.
+          fn(data.sections.packages)
+        }
+
+      });
+    },
+    methods: {
+      down_a: function () {
+        var me = this
+        //当滚动条距离底部高度等于你在scroll-foot设置的高度时将运行一次此函数
+        //if scrollTop = scroll-foot , function run.
+        me.$options.loadListData(function (data) {
+            me.a = me.a.concat(data)
+            me.ascroll.resetload(true)
+        });
+
+      },
+      up_a: function () {
+        var me = this
+        //当滚动条距离底部高度等于你在scroll-top设置的高度时将运行一次此函数
+        //if scrollTop = scroll-top , function run.
+        me.$options.loadListData(function (data) {
+              me.a = data
+              me.ascroll.resetload()
+        });
+      },
+      down_b: function () {
+        var me = this
+        //当滚动条距离底部高度等于你在scroll-foot设置的高度时将运行一次此函数
+        //if scrollTop = scroll-foot , function run.
+        me.$options.loadListData(function (data) {
+          me.b = me.b.concat(data)
+        });
+      },
+      up_b: function () {
+        var me = this
+        //当滚动条距离底部高度等于你在scroll-top设置的高度时将运行一次此函数
+        //if scrollTop = scroll-top , function run.
+        me.$options.loadListData(function (data) {
+            me.b = data
+            me.bscroll.resetload()
+        });
+      },
+    }
+  })
+</script>
+</body>
+</html>

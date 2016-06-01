@@ -1,0 +1,29 @@
+{
+  "name": "vue-drapload",
+  "version": "0.1.1",
+  "description": "one vue plug for resolve pull-to-refresh and load more data",
+  "main": "src/vue-scroll.js",
+  "directories": {
+    "example": "example"
+  },
+  "scripts": {
+    "test": "make test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+git@github.com:jy03078959/vue-drapload.git"
+  },
+  "keywords": [
+    "vue",
+    "vue-scroll",
+    "vue-infinite-scroll",
+    "vue-drapload",
+    "vue-load-more"
+  ],
+  "author": "stone",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/jy03078959/vue-drapload/issues"
+  },
+  "homepage": "https://github.com/jy03078959/vue-drapload"
+}
