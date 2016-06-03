@@ -21,7 +21,7 @@ html, body, .app {
     width: 100%;
 
     display: block;
-
+    text-decoration: none;
     box-sizing: border-box;
 }
 

@@ -18,10 +18,10 @@
 <body>
 <div class="app" v-drapload drapload-key="ascroll" drapload-initialize="true" drapload-down="down()">
   <div>
-    <div class="item" v-for="item in a" @click="click(item.url)">
+    <a class="item" v-for="item in a" :href="item.url" >
       <h1 class="name">{{item.name}}</h1>
       <div class="desc">{{item.desc}}</div>
-    </div>
+    </a>
   </div>
 </div>
 <script src="js/jquery.js"></script>
@@ -73,9 +73,6 @@
           me.ascroll.resetload()
         });
 
-      },
-      click: function (item) {
-        window.location.href=item
       }
     }
   })
