@@ -2,6 +2,10 @@
 
 这是基于vue的一个下拉刷新和加载更多的插件。
 
+[在线例子](http://htmlpreview.github.io/?https://github.com/jy03078959/vue-drapload/blob/master/example/index.html)
+
+
+
 
 # 安装//Install
 
