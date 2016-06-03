@@ -2,7 +2,7 @@
   typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) : (factory((global.Scroll = global.Scroll || {})))
 }(this, function (exports) {
   'use strict'
-  var throttle = function throttle (fn, delay) {
+  var throttle = function (fn, delay) {
     var now, lastExec, timer, context, args //eslint-disable-line
 
     var execute = function execute () {
@@ -35,9 +35,7 @@
       }
     }
   }
-  var $ = function (dom) {
-    return document.querySelector(dom)
-  }
+
   /*
    默认状态
    下拉中
@@ -48,7 +46,6 @@
    加载更多
    暂无数据(不显示。没有数据可刷新)
    * */
-
   var getScrollTop = function (element) {
     if (element) {
       return element.scrollTop
@@ -56,30 +53,55 @@
       return document.documentElement.scrollTop
     }
   }
-  var getComputedStyle = document.defaultView.getComputedStyle
 
-  /**
-   * 获取滚动元素节点
-   * @param element
-   * @returns {*}
-   */
-  var getScrollEventTarget = function getScrollEventTarget (element) {
-    var currentNode = element
-    while (currentNode && currentNode.tagName !== 'HTML' && currentNode.nodeType === 1) {
-      var overflowY = getComputedStyle(currentNode).overflowY
-      if (overflowY === 'scroll' || overflowY === 'auto') {
-        return currentNode
-      }
-      currentNode = currentNode.parentNode
-    }
-    return window
-  }
   // css过渡
   function fnTransition (dom, num) {
     dom.style.transition = 'all ' + num + 'ms'
     dom.style.webkitTransform = 'all ' + num + 'ms'
   }
 
+  /**
+   * 获取可视区域高度
+   * @returns {number}
+   */
+  var getVisibleHeight = function (element) {
+    if (element) {
+      return element.offsetHeight
+    } else {
+      return document.documentElement.offsetHeight
+    }
+  }
+
+  /**
+   * 获取滚动区域高度信息
+   * @returns {number}
+   */
+  var getScrollHeight = function (element) {
+    if (element) {
+      return element.scrollHeight
+    } else {
+      return document.documentElement.scrollHeight
+    }
+  }
+
+  /**
+   * 判断该元素是否已经加入dom树
+   * @param element
+   * @returns {boolean}
+   */
+  var isAttached = function (element) {
+    var currentNode = element.parentNode
+    while (currentNode) {
+      if (currentNode.tagName === 'HTML') {
+        return true
+      }
+      if (currentNode.nodeType === 11) {
+        return false
+      }
+      currentNode = currentNode.parentNode
+    }
+    return false
+  }
   // touches
   function fnTouches (e) {
     if (!e.touches) {
@@ -117,23 +139,8 @@
       && me.direction == 'up'
     ) {
       e.preventDefault()
+      domUp.pullingCall(_absMoveY)
 
-      fnTransition(domUp.dom, 0)
-      // 下拉
-      if (_absMoveY <= options.domUp.distance) {
-        me._offsetY = _absMoveY
-        domUp.dom.innerHTML = domUp.domRefresh
-        // 指定距离 < 下拉距离 < 指定距离*2
-      } else if (_absMoveY > options.domUp.distance
-        && _absMoveY <= options.domUp.distance * 2) {
-
-        me._offsetY = options.domUp.distance + (_absMoveY - options.domUp.distance) * 0.5
-        domUp.dom.innerHTML = domUp.domUpdate
-        // 下拉距离 > 指定距离*2
-      } else {
-        me._offsetY = options.domUp.distance + options.domUp.distance * 0.5 + (_absMoveY - options.domUp.distance * 2) * 0.2
-      }
-      domUp.dom.style.height = me._offsetY + "px"
     }
   }
 
@@ -147,11 +154,9 @@
       && me.direction == 'up'
     ) {
 
-      fnTransition(domUp.dom, 300)
-
       if (_absMoveY > options.domUp.distance) {
         domUp.dom.style.height = options.domUp.distance + "px"
-        domUp.dom.innerHTML = domUp.domLoad
+        domUp.loadingCall()
         me.loading = true
         me.directive.vm.$get(options.loadUpFn)
 
@@ -162,64 +167,15 @@
     }
   }
 
-  /**
-   * 获取可视区域高度
-   * @returns {number}
-   */
-  var getVisibleHeight = function getVisibleHeight (element) {
-    if (element) {
-      return element.offsetHeight
-    } else {
-      return document.documentElement.offsetHeight
-    }
-  }
-
-  /**
-   * 获取滚动区域高度信息
-   * @returns {number}
-   */
-  var getScrollHeight = function getScrollHeight (element) {
-    if (element) {
-      return element.scrollHeight
-    } else {
-      return document.documentElement.scrollHeight
-    }
-  }
-
-  /**
-   * 判断该元素是否已经加入dom树
-   * @param element
-   * @returns {boolean}
-   */
-  var isAttached = function isAttached (element) {
-    var currentNode = element.parentNode
-    while (currentNode) {
-      if (currentNode.tagName === 'HTML') {
-        return true
-      }
-      if (currentNode.nodeType === 11) {
-        return false
-      }
-      currentNode = currentNode.parentNode
-    }
-    return false
-  }
-
-  var Rolling = window.onscroll = function (direction) {
-    /* 判断是否可以滚动 */
-    return true
-  }
-  var merge = function  (org,aim){
-    for (var key in aim){
-      org[key] = aim[key]
+  var merge = function (org, aim) {
+    for (var key in aim) {
+      org[ key ] = aim[ key ]
     }
   }
   var Scroll = function (_directive) {
     var directive = _directive
     return {
-      _options: {
-
-      },
+      _options: {},
 
       _initConfig: function () {
         var me = this
@@ -230,29 +186,29 @@
         me.element = element                                            // 滑动区域
         me.isData = true
         me._options = {
-            key: "scroll_" + parseInt(Math.random() * 10),
-            domUp: {                                                            // 上方DOM
-              dom: null,
-              distance: 50,
-              domClass: 'dropload-up',
-              domRefresh: '<div class="dropload-refresh">↓下拉刷新</div>',  //
-              domLoad: '<div class="dropload-load"><span class="loading"></span>加载中...</div>',
-              domLoadEnd: '<div class="dropload-load">加载完成</div>',
-              domUpdate: '<div class="dropload-update">↑释放更新</div>'
-            },
-            domDown: {                                                          // 下方DOM
-              dom: null,
-              domClass: 'dropload-down',
-              domRefresh: '<div class="dropload-refresh">加载更多</div>',
-              domLoad: '<div class="dropload-load"><span class="loading"></span>加载中...</div>',
-              domNoData: '',
-              distance: 50
-            },
-            loadUpFn: '',                                                       // 上方function
-            loadDownFn: ''                                                      // 下方function
-          }
-        merge(me._options.domUp,me.baseConfig.domUp)
-        merge(me._options.domDown,me.baseConfig.domDown)
+          key: "scroll_" + parseInt(Math.random() * 10),
+          domUp: {                                                            // 上方DOM
+            dom: null,
+            distance: 50,
+            domClass: 'dropload-up',
+            initialCall: function () {}, //初始化状态
+            pullingCall: function () {}, //下拉过程中
+            loadingCall: function () {},//加载中
+            loadEndCall: function () {},//加载完成
+          },
+          domDown: {                                                          // 下方DOM
+            dom: null,
+            domClass: 'dropload-down',
+            initialCall: function () {},//初始化
+            loadingCall: function () {},
+            domNoData: function () {},
+            distance: 50
+          },
+          loadUpFn: '',                                                       // 上方function
+          loadDownFn: ''                                                      // 下方function
+        }
+        merge(me._options.domUp, me.baseConfig.domUp)
+        merge(me._options.domDown, me.baseConfig.domDown)
 
         //获取下拉刷新方法
         var key = element.getAttribute('scroll-key')
@@ -277,20 +233,20 @@
         var child = element.firstElementChild
 
         if (element.childElementCount != 1) {
-          console.warn("滚动元素最好只有一个孩子节点")
+          console.error("滚动元素最好只有一个孩子节点")
         } else {
           //绑定相关方法后才插入相关元素
           if (options.loadUpFn) {
             options.domUp.dom = document.createElement('div')
             options.domUp.dom.setAttribute("class", options.domUp.domClass)
-            options.domUp.dom.innerHTML = options.domUp.domRefresh
+            options.domUp.initialCall()
             element.insertBefore(options.domUp.dom, child)
             options.domUp.distance = options.domUp.dom.firstElementChild.clientHeight
           }
           if (options.loadDownFn) {
             options.domDown.dom = document.createElement('div')
             options.domDown.dom.setAttribute("class", options.domDown.domClass)
-            options.domDown.dom.innerHTML = options.domDown.domRefresh
+            options.domDown.initialCall()
             element.appendChild(options.domDown.dom)
             options.domDown.distance = options.domDown.dom.firstElementChild.clientHeight
           }
@@ -305,26 +261,31 @@
         //绑定滚动事件
         if (options.loadUpFn) {
           // 绑定触摸
-          element.addEventListener('touchstart', function (e) {
+
+          me.touchstartCall = function (e) {
             if (!me.loading) {
               fnTouches.call(me, e)
               fnTouchstart.call(me, e)
             }
-          })
-          element.addEventListener('touchmove', function (e) {
+          }
+          me.touchmoveCall = function (e) {
             if (!me.loading) {
               fnTouches.call(me, e)
               fnTouchmove.call(me, e)
             }
-          })
-          element.addEventListener('touchend', function () {
+          }
+          me.touchendCall = function () {
             if (!me.loading) {
               fnTouchend.call(me)
             }
-          })
+          }
+          element.addEventListener('touchmove', me.touchmoveCall)
+          element.addEventListener('touchstart', me.touchstartCall)
+          element.addEventListener('touchend', me.touchendCall)
         }
         if (options.loadDownFn) {
-          element.addEventListener('scroll', throttle(me.doCheck.bind(me), 200))
+          me.scrollListener = throttle(me.doCheck.bind(me), 200)
+          element.addEventListener('scroll', me.scrollListener)
         }
 
         //判断是否需要进入页面就开始检查一下数据是否需要加载。
@@ -341,7 +302,7 @@
       /**
        * 控制加载更多是否需要
        */
-      noData:function  (){
+      noData: function () {
         var me = this
         me.isData = false
       },
@@ -353,18 +314,18 @@
         var me = this
         var options = me._options
         me.loading = false
-        if (me.direction == 'up' && options.loadUpFn) {
+        if (me.direction == 'up') {
           options.domUp.dom.style.height = '0px'
-          options.domUp.dom.innerHTML = options.domUp.domLoadEnd
-        } else if (me.direction == 'down' && options.loadDownFn) {
+          options.domUp.loadEndCall()
+        } else {
           // 如果有数据
           if (me.isData) {
             // 加载区修改样式
-            options.domDown.dom.innerHTML = options.domDown.domRefresh
+            options.domDown.initialCall()
           } else {
             // 如果没数据
             options.loadDownFn = null
-            options.domDown.dom.innerHTML = options.domDown.domNoData
+            options.domDown.domNoData()
           }
         }
       },
@@ -387,16 +348,16 @@
         console.log("key----", me._options.key)
         var element = me.element
         var options = me._options
-        var downTrigger = getVisibleHeight(element) + getScrollTop(element) >= getScrollHeight(element)
-        if (downTrigger && me._options.loadDownFn) {
-          options.domDown.dom.innerHTML = options.domDown.domLoad
+        var downTrigger = getVisibleHeight(element) + getScrollTop(element) + 20 >= getScrollHeight(element)
+        if (downTrigger && options.loadDownFn) {
+          options.domDown.loadingCall()
           directive.vm.$get(options.loadDownFn)
         }
       },
       bind: function (config) {
         var me = this
         var element = directive.el
-        me.baseConfig = config||{}
+        me.baseConfig = config || {}
         // 判断文档是否加载插入dom对象，一直尝试。直到 加入dom对象树种
         directive.vm.$on('hook:ready', function () {
           if (isAttached(element)) {
@@ -415,15 +376,14 @@
             setTimeout(tryBind, 50)
           }
         }
-
         tryBind()
       },
       unbind: function () {
         var me = this
-        this.scrollEventTarget.removeEventListener('scroll', this.scrollListener)
-        this.scrollEventTarget.removeEventListener('touchstart')
-        this.scrollEventTarget.removeEventListener('touchmove')
-        this.scrollEventTarget.removeEventListener('touchend')
+        me.scrollListener && me.element.removeEventListener('scroll', me.scrollListener)
+        me.touchstartCall && me.element.removeEventListener('touchstart', me.touchstartCall)
+        me.touchmoveCall && me.element.removeEventListener('touchmove', me.touchmoveCall)
+        me.touchendCall && me.element.removeEventListener('touchend', me.touchendCall)
         var key = me._options.key
         if (key) {
           delete directive.vm[ key ]
@@ -432,13 +392,65 @@
     }
   }
 
-  function install (Vue,config) {
+  // 基础配置信息
+  var _config = {
+    domUp: {                                                            // 上方DOM
+      initialCall: function () {
+        var me = this
+        me.dom.innerHTML = '<div class="dropload-refresh">↓下拉刷新</div>'
+      },
+      loadingCall: function () {
+        var me = this
+        fnTransition(me.dom, 300)
+        me.dom.innerHTML = '<div class="dropload-load"><span class="loading"></span>加载中...</div>'
+      },
+      loadEndCall: function () {
+        var me = this
+        me.dom.innerHTML = '<div class="dropload-load">加载完成</div>'
+      },
+      pullingCall: function (_absMoveY) {
+        var me = this
+        fnTransition(me.dom, 0)
+        // 下拉
+        if (_absMoveY <= me.distance) {
+          me.initialCall()
+          // 指定距离 < 下拉距离 < 指定距离*2
+        } else if (_absMoveY > me.distance
+          && _absMoveY <= me.distance * 2) {
+          _absMoveY = me.distance + (_absMoveY - me.distance) * 0.5
+          me.dom.innerHTML = '<div class="dropload-update">↑释放更新</div>'
+          // 下拉距离 > 指定距离*2
+        } else {
+          _absMoveY = me.distance + me.distance * 0.5 + (_absMoveY - me.distance * 2) * 0.2
+        }
+        me.dom.style.height = _absMoveY + "px"
+      }
+    },
+    domDown: {                                                          // 下方DOM
+      initialCall: function () {
+        var me = this
+        me.dom.innerHTML = '<div class="dropload-refresh">加载更多</div>'
+      },
+      loadingCall: function () {
+        var me = this
+        me.dom.innerHTML = '<div class="dropload-load"><span class="loading"></span>加载中...</div>'
+      },
+      domNoData: function () {
+        var me = this
+        me.dom.innerHTML = ''
+      },
+    },
+  }
 
+  function install (Vue, config) {
+    config = config||{}
+    config.domUp && merge(_config.domUp, config.domUp)
+    config.domDown && merge(_config.domDown, config.domDown)
     Vue.directive('Scroll', {
       bind: function () {
         var me = this
         me.scroll = new Scroll(me)
-        me.scroll.bind(config)
+        me.scroll.bind(_config)
       },
       unbind: function () {
         var me = this
@@ -446,8 +458,9 @@
       }
     })
   }
+
   Scroll.install = install
-  
+
   if (window.Vue) {
     window.Scroll = Scroll
     Vue.use(install)

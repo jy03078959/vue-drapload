@@ -12,17 +12,13 @@
   <meta name="format-detection" content="telephone=no">
   <link type="text/css" rel="stylesheet" href="css/css.css">
   <style>
-    .app{
-      height:250px;
-      border: 1px solid;
-      margin: 5px;
-    }
+
   </style>
 </head>
 <body>
-<div class="app" v-scroll scroll-key="ascroll" scroll-initialize="true" scroll-down="down_a()" scroll-up="up_a()">
+<div class="app" v-scroll scroll-key="ascroll" scroll-initialize="true" scroll-down="down()" scroll-up="up()">
   <div>
-    <div class="item" v-for="item in a">
+    <div class="item" v-for="item in a" @click="click(item)">
       <h1 class="name">{{item.value}}</h1>
       <div class="desc">{{item.data.description}}</div>
       <div class="down">{{item.data.url}}</div>
@@ -30,25 +26,12 @@
     </div>
   </div>
 </div>
-
-<div class="app" v-scroll scroll-key="bscroll" scroll-initialize="true"  scroll-down="down_b()">
-  <div>
-    <div class="item" v-for="item in b">
-      <h1 class="name">{{item.value}}</h1>
-      <div class="desc">{{item.data.description}}</div>
-      <div class="down">{{item.data.url}}</div>
-      <div class="score">{{item.data.suggested_score}}</div>
-    </div>
-  </div>
-</div>
-
 <script src="js/jquery.js"></script>
 <script src="http://rap.taobao.org/rap.plugin.js?projectId=4039"></script>
 <script src="js/vue.js"></script>
 <script src="../src/index.js"></script>
 <script>
 
-  Vue.use(window.Scroll)
 
   var app = new Vue({
     el: 'body',
@@ -83,42 +66,31 @@
       });
     },
     methods: {
-      down_a: function () {
+      down: function () {
         var me = this
         //当滚动条距离底部高度等于你在scroll-foot设置的高度时将运行一次此函数
         //if scrollTop = scroll-foot , function run.
         me.$options.loadListData(function (data) {
-            me.a = me.a.concat(data)
-            me.ascroll.resetload()
+          me.a = me.a.concat(data)
+          me.ascroll.resetload()
         });
 
       },
-      up_a: function () {
+      up: function () {
         var me = this
         //当滚动条距离底部高度等于你在scroll-top设置的高度时将运行一次此函数
         //if scrollTop = scroll-top , function run.
         me.$options.loadListData(function (data) {
-              me.a = data
-              me.ascroll.resetload()
+          me.a = data
+          me.ascroll.resetload()
         });
       },
-      down_b: function () {
-        var me = this
-        //当滚动条距离底部高度等于你在scroll-foot设置的高度时将运行一次此函数
-        //if scrollTop = scroll-foot , function run.
-        me.$options.loadListData(function (data) {
-          me.b = me.b.concat(data)
-        });
+      click:function  (item){
+        alert(item.value)
       },
-      up_b: function () {
-        var me = this
-        //当滚动条距离底部高度等于你在scroll-top设置的高度时将运行一次此函数
-        //if scrollTop = scroll-top , function run.
-        me.$options.loadListData(function (data) {
-            me.b = data
-            me.bscroll.resetload()
-        });
-      },
+      touchS:function  (item){
+        alert(item.value)
+      }
     }
   })
 </script>
