@@ -13,14 +13,14 @@ npm install vue-drapload --save
 
 ```JavaScript
 import vueDrapload from 'vue-drapload'
-Vue.use(vueDrapload)
+Vue.use(vueDrapload,config)
 ```
 
 ###CommonJS
 
 ```JavaScript
 var vueDrapload =  require('vue-drapload');
-Vue.use(vueDrapload)
+Vue.use(vueDrapload,config)
 ```
 
 ###直接引用//Direct include
@@ -136,7 +136,20 @@ Use v-scroll to enable the infinite scroll, and use drapload-* attributes to def
 # 配置//Config
 
 ```JavaScript
-  //现在使用默认配置。后面下拉刷新的各种状态会提供配置选项控制。
+  //现在使用默认配置。下拉刷新的各种状态会提供配置选项控制。参考 config.html 页面例子
+  var config = {
+      domUp: {
+          initialCall: function () {}, //初始化状态
+          pullingCall: function () {}, //下拉过程中
+          loadingCall: function () {},//加载中
+          loadEndCall: function () {}//加载完成
+        },
+        domDown: {
+          initialCall: function () {},//初始化
+          loadingCall: function () {},
+          domNoData: function () {}
+        }
+    }
 ```
 
 # 选项//Options
