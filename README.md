@@ -1,8 +1,10 @@
 # vue-drapload
 
 这是基于vue的一个下拉刷新和加载更多的插件。
+使用手机模式打开。
 
 [在线例子-基础版](http://htmlpreview.github.io/?https://github.com/jy03078959/vue-drapload/blob/master/example/base.html)
+
 [在线例子-自定义版](http://htmlpreview.github.io/?https://github.com/jy03078959/vue-drapload/blob/master/example/config.html)
 
 
