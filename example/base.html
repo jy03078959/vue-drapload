@@ -16,7 +16,7 @@
   </style>
 </head>
 <body>
-<div class="app" v-scroll scroll-key="ascroll" scroll-initialize="true" scroll-down="down()" scroll-up="up()">
+<div class="app" v-drapload drapload-key="ascroll" drapload-initialize="true" drapload-down="down()" drapload-up="up()">
   <div>
     <div class="item" v-for="item in a" @click="click(item)">
       <h1 class="name">{{item.value}}</h1>
@@ -68,8 +68,8 @@
     methods: {
       down: function () {
         var me = this
-        //当滚动条距离底部高度等于你在scroll-foot设置的高度时将运行一次此函数
-        //if scrollTop = scroll-foot , function run.
+        //当滚动条距离底部高度等于你在drapload-foot设置的高度时将运行一次此函数
+        //if scrollTop = drapload-foot , function run.
         me.$options.loadListData(function (data) {
           me.a = me.a.concat(data)
           me.ascroll.resetload()
@@ -78,18 +78,12 @@
       },
       up: function () {
         var me = this
-        //当滚动条距离底部高度等于你在scroll-top设置的高度时将运行一次此函数
-        //if scrollTop = scroll-top , function run.
+        //当滚动条距离底部高度等于你在drapload-top设置的高度时将运行一次此函数
+        //if scrollTop = drapload-top , function run.
         me.$options.loadListData(function (data) {
           me.a = data
           me.ascroll.resetload()
         });
-      },
-      click:function  (item){
-        alert(item.value)
-      },
-      touchS:function  (item){
-        alert(item.value)
       }
     }
   })

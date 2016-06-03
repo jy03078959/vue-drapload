@@ -1,9 +1,10 @@
-
+/*页面样式*/
 html, body, .app {
     margin: 0;
     padding: 0;
     height: 100%;
     overflow: auto;
+    background-color: #ddd;
     -webkit-overflow-scrolling: touch; /* ios5+ 以上滚动流畅*/
 }
 
@@ -16,6 +17,12 @@ html, body, .app {
     border-bottom: 1px solid #ddd;
 
     position: relative;
+
+    width: 100%;
+
+    display: block;
+
+    box-sizing: border-box;
 }
 
 .item h1 {
@@ -28,6 +35,12 @@ html, body, .app {
 .item .desc {
 
     color: #0D7168;
+
+    word-wrap: break-word;
+
+    width: 100%;
+
+    word-break: break-all;
 }
 
 .item .dowm {
@@ -45,6 +58,8 @@ html, body, .app {
     color: #AD5A11;
 }
 
+
+/*下拉刷新和加载更多的基础样式。可以自己定义*/
 .dropload-up {
     position: relative;
     height: 0;

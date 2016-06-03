@@ -1,9 +1,13 @@
+/**
+ * Created by stone on 2016/6/3.
+ * Email:258137678@qq.com
+ */
 (function (global, factory) {
-  typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) : (factory((global.Scroll = global.Scroll || {})))
+  typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) : (factory((global.Drapload = global.Drapload || {})))
 }(this, function (exports) {
   'use strict'
   var throttle = function (fn, delay) {
-    var now, lastExec, timer, context, args //eslint-disable-line
+    var now, lastExec, timer, context, args
 
     var execute = function execute () {
       fn.apply(context, args)
@@ -36,28 +40,17 @@
     }
   }
 
-  /*
-   默认状态
-   下拉中
-   到达预定位置
-   加载
-
-   默认状态
-   加载更多
-   暂无数据(不显示。没有数据可刷新)
-   * */
+  /**
+   * 获取滚动位置信息
+   * @param element
+   * @returns {*}
+   */
   var getScrollTop = function (element) {
     if (element) {
       return element.scrollTop
     } else {
       return document.documentElement.scrollTop
     }
-  }
-
-  // css过渡
-  function fnTransition (dom, num) {
-    dom.style.transition = 'all ' + num + 'ms'
-    dom.style.webkitTransform = 'all ' + num + 'ms'
   }
 
   /**
@@ -139,6 +132,19 @@
       && me.direction == 'up'
     ) {
       e.preventDefault()
+      fnTransition(domUp.dom, 0)
+
+      if (_absMoveY <= domUp.distance) {
+        // 下拉
+      } else if (_absMoveY > domUp.distance
+        && _absMoveY <= domUp.distance * 2) {
+        // 指定距离 < 下拉距离 < 指定距离*2
+        _absMoveY = domUp.distance + (_absMoveY - domUp.distance) * 0.5
+      } else {
+        // 下拉距离 > 指定距离*2
+        _absMoveY = domUp.distance + domUp.distance * 0.5 + (_absMoveY - domUp.distance * 2) * 0.2
+      }
+      domUp.dom.style.height = _absMoveY + "px"
       domUp.pullingCall(_absMoveY)
 
     }
@@ -153,13 +159,12 @@
     if (me.touchScrollTop <= 0
       && me.direction == 'up'
     ) {
-
+      fnTransition(options.domUp.dom, 300)
       if (_absMoveY > options.domUp.distance) {
         domUp.dom.style.height = options.domUp.distance + "px"
         domUp.loadingCall()
         me.loading = true
         me.directive.vm.$get(options.loadUpFn)
-
       } else {
         domUp.dom.style.height = '0px'
       }
@@ -172,7 +177,7 @@
       org[ key ] = aim[ key ]
     }
   }
-  var Scroll = function (_directive) {
+  var Drapload = function (_directive) {
     var directive = _directive
     return {
       _options: {},
@@ -211,16 +216,16 @@
         merge(me._options.domDown, me.baseConfig.domDown)
 
         //获取下拉刷新方法
-        var key = element.getAttribute('scroll-key')
+        var key = element.getAttribute('drapload-key')
         if (key) {
           directive.vm[ key ] = me
           me._options.key = key
         }
 
         //获取下拉刷新方法
-        me._options.loadUpFn = element.getAttribute('scroll-up')
+        me._options.loadUpFn = element.getAttribute('drapload-up')
         //获取下拉刷新方法
-        me._options.loadDownFn = element.getAttribute('scroll-down')
+        me._options.loadDownFn = element.getAttribute('drapload-down')
 
       },
       _initDom: function () {
@@ -289,7 +294,7 @@
         }
 
         //判断是否需要进入页面就开始检查一下数据是否需要加载。
-        var initializeExpr = element.getAttribute('scroll-initialize')
+        var initializeExpr = element.getAttribute('drapload-initialize')
         var initialize = false
         if (initializeExpr) {
           initialize = Boolean(directive.vm.$get(initializeExpr))
@@ -315,6 +320,8 @@
         var options = me._options
         me.loading = false
         if (me.direction == 'up') {
+
+          fnTransition(options.domUp.dom, 300)
           options.domUp.dom.style.height = '0px'
           options.domUp.loadEndCall()
         } else {
@@ -392,7 +399,17 @@
     }
   }
 
-  // 基础配置信息
+  // 基础配置信息，配置不同状态的显示情况
+
+  // css过渡
+  function fnTransition (dom, num) {
+    if (dom.transNum != num) {
+      dom.transNum = num
+      dom.style.transition = 'all ' + num + 'ms'
+      dom.style.webkitTransition = 'all ' + num + 'ms'
+    }
+  }
+
   var _config = {
     domUp: {                                                            // 上方DOM
       initialCall: function () {
@@ -401,7 +418,6 @@
       },
       loadingCall: function () {
         var me = this
-        fnTransition(me.dom, 300)
         me.dom.innerHTML = '<div class="dropload-load"><span class="loading"></span>加载中...</div>'
       },
       loadEndCall: function () {
@@ -410,20 +426,15 @@
       },
       pullingCall: function (_absMoveY) {
         var me = this
-        fnTransition(me.dom, 0)
-        // 下拉
         if (_absMoveY <= me.distance) {
+          // 下拉
           me.initialCall()
-          // 指定距离 < 下拉距离 < 指定距离*2
         } else if (_absMoveY > me.distance
           && _absMoveY <= me.distance * 2) {
-          _absMoveY = me.distance + (_absMoveY - me.distance) * 0.5
+          // 指定距离 < 下拉距离 < 指定距离*2
           me.dom.innerHTML = '<div class="dropload-update">↑释放更新</div>'
-          // 下拉距离 > 指定距离*2
-        } else {
-          _absMoveY = me.distance + me.distance * 0.5 + (_absMoveY - me.distance * 2) * 0.2
+
         }
-        me.dom.style.height = _absMoveY + "px"
       }
     },
     domDown: {                                                          // 下方DOM
@@ -443,13 +454,14 @@
   }
 
   function install (Vue, config) {
-    config = config||{}
+    config = config || {}
     config.domUp && merge(_config.domUp, config.domUp)
     config.domDown && merge(_config.domDown, config.domDown)
-    Vue.directive('Scroll', {
+
+    Vue.directive('Drapload', {
       bind: function () {
         var me = this
-        me.scroll = new Scroll(me)
+        me.scroll = new Drapload(me)
         me.scroll.bind(_config)
       },
       unbind: function () {
@@ -459,14 +471,14 @@
     })
   }
 
-  Scroll.install = install
+  Drapload.install = install
 
   if (window.Vue) {
-    window.Scroll = Scroll
+    window.Drapload = Drapload
     Vue.use(install)
   }
 
   exports.install = install
-  exports.Scroll = Scroll
+  exports.Drapload = Drapload
 
 }))

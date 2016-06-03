@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>vue 测试例子</title>
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1, minimum-scale=1, user-scalable=1"/>
+  <meta name="renderer" content="webkit"/>
+  <meta name="apple-mobile-web-app-capable" content="yes"/>
+  <meta name="full-screen" content="yes"/>
+  <meta name="x5-fullscreen" content="true"/>
+  <meta name="format-detection" content="telephone=no">
+  <link type="text/css" rel="stylesheet" href="css/css.css">
+  <style>
+    .app {
+      height: 250px;
+      border: 1px solid;
+      margin: 5px;
+    }
+  </style>
+</head>
+<body>
+<div class="app" v-drapload drapload-key="ascroll" drapload-initialize="true" drapload-down="down_a()"
+     drapload-up="up_a()">
+  <div>
+    <div class="item" v-for="item in a">
+      <h1 class="name">{{item.value}}</h1>
+      <div class="desc">{{item.data.description}}</div>
+      <div class="down">{{item.data.url}}</div>
+      <div class="score">{{item.data.suggested_score}}</div>
+    </div>
+  </div>
+</div>
+
+<div class="app" v-drapload drapload-key="bscroll" drapload-initialize="true" drapload-down="down_b()">
+  <div>
+    <div class="item" v-for="item in b">
+      <h1 class="name">{{item.value}}</h1>
+      <div class="desc">{{item.data.description}}</div>
+      <div class="down">{{item.data.url}}</div>
+      <div class="score">{{item.data.suggested_score}}</div>
+    </div>
+  </div>
+</div>
+
+<script src="js/jquery.js"></script>
+<script src="http://rap.taobao.org/rap.plugin.js?projectId=4039"></script>
+<script src="js/vue.js"></script>
+<script src="../src/index.js"></script>
+<script>
+
+  //自定义下拉刷新效果
+  var config = {
+    domUp: {                                                            // 上方DOM
+      initialCall: function () {
+        var me = this
+        me.dom.innerHTML = '<div class="dropload-refresh">我的下拉</div>'
+      },
+      loadingCall: function () {
+        var me = this
+        me.dom.innerHTML = '<div class="dropload-load"><span class="loading"></span>拼命加载中...</div>'
+      },
+      loadEndCall: function () {
+        var me = this
+        me.dom.innerHTML = '<div class="dropload-load">总算完成了</div>'
+      },
+      pullingCall: function (_absMoveY) {
+        var me = this
+        if (_absMoveY <= me.distance) {
+          // 下拉过程
+          me.initialCall()
+        } else if (_absMoveY > me.distance
+                && _absMoveY <= me.distance * 2) {
+          // 可以释放更新
+          me.dom.innerHTML = '<div class="dropload-update">禽兽放开我</div>'
+
+        }
+      }
+    }
+  }
+  Vue.use(window.Drapload, config)
+
+  var app = new Vue({
+    el: 'body',
+    data: function () {
+      return { a: [], b: [] }
+    },
+    data: function () {
+      return { a: [], b: [] }
+    },
+
+    ready: function () {
+      var me = this;
+      me.$options.vue = me
+    },
+    /**
+     * 加载数据
+     * @param fn
+     */
+    loadListData: function (fn) {
+      var me = this.vue;
+      $.ajax({
+        url: 'npm',
+        data: {},
+        type: 'GET',
+        success: function (data) {
+
+          // 初始化数据 先获取所有数据并初始化前６条
+          // Initialize the data,get 0-6 data of the array.
+          fn(data.sections.packages)
+        }
+
+      });
+    },
+    methods: {
+      down_a: function () {
+        var me = this
+        //当滚动条距离底部高度等于你在drapload-foot设置的高度时将运行一次此函数
+        //if scrollTop = drapload-foot , function run.
+        me.$options.loadListData(function (data) {
+          me.a = me.a.concat(data)
+          me.ascroll.resetload()
+        });
+
+      },
+      up_a: function () {
+        var me = this
+        //当滚动条距离底部高度等于你在drapload-top设置的高度时将运行一次此函数
+        //if scrollTop = drapload-top , function run.
+        me.$options.loadListData(function (data) {
+          me.a = data
+          me.ascroll.resetload()
+        });
+      },
+      down_b: function () {
+        var me = this
+        //当滚动条距离底部高度等于你在drapload-foot设置的高度时将运行一次此函数
+        //if scrollTop = drapload-foot , function run.
+        me.$options.loadListData(function (data) {
+          me.b = me.b.concat(data)
+        });
+      },
+      up_b: function () {
+        var me = this
+        //当滚动条距离底部高度等于你在drapload-top设置的高度时将运行一次此函数
+        //if scrollTop = drapload-top , function run.
+        me.$options.loadListData(function (data) {
+          me.b = data
+          me.bscroll.resetload()
+        });
+      },
+    }
+  })
+</script>
+</body>
+</html>
