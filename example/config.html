@@ -32,7 +32,8 @@
   </div>
 </div>
 
-<div class="app" v-drapload drapload-key="bscroll" drapload-initialize="true" drapload-down="down_b()">
+<div v-show="false" class="app" v-drapload drapload-key="bscroll" drapload-initialize="true" drapload-down="down_b()"
+     drapload-up="up_b()">
   <div>
     <div class="item" v-for="item in b">
       <h1 class="name">{{item.value}}</h1>
@@ -66,11 +67,11 @@
       },
       pullingCall: function (_absMoveY) {
         var me = this
-        if (_absMoveY <= me.distance) {
+        if (_absMoveY <= me.getDistance()) {
           // 下拉过程
           me.initialCall()
-        } else if (_absMoveY > me.distance
-                && _absMoveY <= me.distance * 2) {
+        } else if (_absMoveY > me.getDistance()
+                && _absMoveY <= me.getDistance() * 2) {
           // 可以释放更新
           me.dom.innerHTML = '<div class="dropload-update">禽兽放开我</div>'
 

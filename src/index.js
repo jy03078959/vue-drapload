@@ -134,15 +134,15 @@
       e.preventDefault()
       fnTransition(domUp.dom, 0)
 
-      if (_absMoveY <= domUp.distance) {
+      if (_absMoveY <= domUp.getDistance()) {
         // 下拉
-      } else if (_absMoveY > domUp.distance
-        && _absMoveY <= domUp.distance * 2) {
+      } else if (_absMoveY > domUp.getDistance()
+        && _absMoveY <= domUp.getDistance() * 2) {
         // 指定距离 < 下拉距离 < 指定距离*2
-        _absMoveY = domUp.distance + (_absMoveY - domUp.distance) * 0.5
+        _absMoveY = domUp.getDistance() + (_absMoveY - domUp.getDistance()) * 0.5
       } else {
         // 下拉距离 > 指定距离*2
-        _absMoveY = domUp.distance + domUp.distance * 0.5 + (_absMoveY - domUp.distance * 2) * 0.2
+        _absMoveY = domUp.getDistance() + domUp.getDistance() * 0.5 + (_absMoveY - domUp.getDistance() * 2) * 0.2
       }
       domUp.dom.style.height = _absMoveY + "px"
       domUp.pullingCall(_absMoveY)
@@ -160,8 +160,8 @@
       && me.direction == 'up'
     ) {
       fnTransition(options.domUp.dom, 300)
-      if (_absMoveY > options.domUp.distance) {
-        domUp.dom.style.height = options.domUp.distance + "px"
+      if (_absMoveY > options.domUp.getDistance()) {
+        domUp.dom.style.height = options.domUp.getDistance() + "px"
         domUp.loadingCall()
         me.loading = true
         me.directive.vm.$get(options.loadUpFn)
@@ -194,7 +194,6 @@
           key: "scroll_" + parseInt(Math.random() * 10),
           domUp: {                                                            // 上方DOM
             dom: null,
-            distance: 50,
             domClass: 'dropload-up',
             initialCall: function () {}, //初始化状态
             pullingCall: function () {}, //下拉过程中
@@ -207,7 +206,6 @@
             initialCall: function () {},//初始化
             loadingCall: function () {},
             domNoData: function () {},
-            distance: 50
           },
           loadUpFn: '',                                                       // 上方function
           loadDownFn: ''                                                      // 下方function
@@ -246,14 +244,18 @@
             options.domUp.dom.setAttribute("class", options.domUp.domClass)
             options.domUp.initialCall()
             element.insertBefore(options.domUp.dom, child)
-            options.domUp.distance = options.domUp.dom.firstElementChild.clientHeight
+            options.domUp.getDistance = function  (){
+              return options.domUp.dom.firstElementChild.clientHeight
+            }
           }
           if (options.loadDownFn) {
             options.domDown.dom = document.createElement('div')
             options.domDown.dom.setAttribute("class", options.domDown.domClass)
             options.domDown.initialCall()
             element.appendChild(options.domDown.dom)
-            options.domDown.distance = options.domDown.dom.firstElementChild.clientHeight
+            options.domDown.getDistance = function  (){
+              return options.domDown.dom.firstElementChild.clientHeight
+            }
           }
         }
       },
@@ -426,11 +428,11 @@
       },
       pullingCall: function (_absMoveY) {
         var me = this
-        if (_absMoveY <= me.distance) {
+        if (_absMoveY <= me.getDistance()) {
           // 下拉
           me.initialCall()
-        } else if (_absMoveY > me.distance
-          && _absMoveY <= me.distance * 2) {
+        } else if (_absMoveY > me.getDistance()
+          && _absMoveY <= me.getDistance() * 2) {
           // 指定距离 < 下拉距离 < 指定距离*2
           me.dom.innerHTML = '<div class="dropload-update">↑释放更新</div>'
 
