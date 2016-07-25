@@ -181,7 +181,7 @@
     var directive = _directive
     return {
       _options: {},
-
+      scrollTop: 0,
       _initConfig: function () {
         var me = this
         if (this.__initConfig) return
@@ -244,7 +244,7 @@
             options.domUp.dom.setAttribute("class", options.domUp.domClass)
             options.domUp.initialCall()
             element.insertBefore(options.domUp.dom, child)
-            options.domUp.getDistance = function  (){
+            options.domUp.getDistance = function () {
               return options.domUp.dom.firstElementChild.clientHeight
             }
           }
@@ -253,7 +253,7 @@
             options.domDown.dom.setAttribute("class", options.domDown.domClass)
             options.domDown.initialCall()
             element.appendChild(options.domDown.dom)
-            options.domDown.getDistance = function  (){
+            options.domDown.getDistance = function () {
               return options.domDown.dom.firstElementChild.clientHeight
             }
           }
@@ -364,10 +364,18 @@
         console.log("key----", me._options.key)
         var element = me.element
         var options = me._options
-        var downTrigger = getVisibleHeight(element) + getScrollTop(element) + 20 >= getScrollHeight(element)
+        me.scrollTop = getScrollTop(element)
+        var downTrigger = getVisibleHeight(element) + me.scrollTop + 20 >= getScrollHeight(element)
         if (downTrigger && options.loadDownFn) {
           options.domDown.loadingCall()
           directive.vm.$get(options.loadDownFn)
+        }
+      },
+      setScrollTop: function (top) {
+        var me = this
+        var element = me.element
+        if(element){
+          element.scrollTop = top
         }
       },
       bind: function (config) {
@@ -379,6 +387,10 @@
           if (isAttached(element)) {
             me.doBind()
           }
+        })
+        // 再次显示的时候处理原来已经滚动到的位置
+        directive.vm.$on('hook:attached', function () {
+          me.setScrollTop(me.scrollTop)
         })
 
         this.bindTryCount = 0
