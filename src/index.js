@@ -314,6 +314,13 @@
         me.isData = false
       },
       /**
+       * 控制加载更多是否需要
+       */
+      hasData: function () {
+        var me = this
+        me.isData = true
+      },
+      /**
        * 重置加载组件状态
        * @param noData 确认 没有数据
        */
@@ -326,16 +333,16 @@
           fnTransition(options.domUp.dom, 300)
           options.domUp.dom.style.height = '0px'
           options.domUp.loadEndCall()
+          // 下拉刷新后，加载更多的数据状态需要更新
+
         } else {
-          // 如果有数据
-          if (me.isData) {
-            // 加载区修改样式
-            options.domDown.initialCall()
-          } else {
-            // 如果没数据
-            options.loadDownFn = null
-            options.domDown.domNoData()
-          }
+        }
+        if (me.isData) {
+          // 加载区修改样式
+          options.domDown.initialCall()
+        } else {
+          // 如果没数据
+          options.domDown.domNoData()
         }
       },
       doBind: function () {
