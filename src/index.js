@@ -366,7 +366,7 @@
         var options = me._options
         me.scrollTop = getScrollTop(element)
         var downTrigger = getVisibleHeight(element) + me.scrollTop + 20 >= getScrollHeight(element)
-        if (downTrigger && options.loadDownFn) {
+        if (downTrigger && options.loadDownFn && me.isData) {
           options.domDown.loadingCall()
           directive.vm.$get(options.loadDownFn)
         }
@@ -374,7 +374,7 @@
       setScrollTop: function (top) {
         var me = this
         var element = me.element
-        if(element){
+        if (element) {
           element.scrollTop = top
         }
       },
