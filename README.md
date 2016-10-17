@@ -174,6 +174,7 @@ Use v-scroll to enable the infinite scroll, and use drapload-* attributes to def
 | ----- | ----- |
 | resetload | 重置下拉刷新或者加载跟多状态。一般当你加载到数据后会调用该方法 |
 | noData | 当加载更多数据（drapload-down对应方法）的时候没有数据后可以调用该方法。这时加载跟多组件状态会改为无数据状态 |
+| hasData | 当加载更多数据（drapload-down对应方法）的时候还存在数据后可以调用该方法。这时加载跟多组件状态会改为还能加载更多数据的状态|
 
 # License
 
