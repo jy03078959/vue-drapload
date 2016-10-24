@@ -156,6 +156,8 @@
     var options = me._options
     var domUp = options.domUp
     var _absMoveY = Math.abs(me._moveY)
+
+    //alert(me.touchScrollTop+me.direction)
     if (me.touchScrollTop <= 0
       && me.direction == 'up'
     ) {
@@ -168,8 +170,8 @@
       } else {
         domUp.dom.style.height = '0px'
       }
-      me._moveY = 0
     }
+    me._moveY = 0
   }
 
   var merge = function (org, aim) {
@@ -454,7 +456,6 @@
           && _absMoveY <= me.getDistance() * 2) {
           // 指定距离 < 下拉距离 < 指定距离*2
           me.dom.innerHTML = '<div class="dropload-update">↑释放更新</div>'
-
         }
       }
     },
