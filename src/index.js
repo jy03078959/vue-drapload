@@ -368,8 +368,9 @@
         var options = me._options
         me.scrollTop = getScrollTop(element)
         var downTrigger = getVisibleHeight(element) + me.scrollTop + 20 >= getScrollHeight(element)
-        if (downTrigger && options.loadDownFn && me.isData) {
+        if (downTrigger && options.loadDownFn && me.isData && !me.loading) {
           options.domDown.loadingCall()
+          me.loading = true
           directive.vm.$get(options.loadDownFn)
         }
       },
