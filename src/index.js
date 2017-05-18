@@ -347,6 +347,10 @@
           options.domDown.domNoData()
         }
       },
+      resetDataStatus: function () {
+        var me = this
+        me.isData = true
+      },
       doBind: function () {
         var me = this
         if (this.binded) return // eslint-disable-line
